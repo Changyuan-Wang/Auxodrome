@@ -348,15 +348,6 @@ class VideoPredictor(_AbstractPredictor):
         write_video(filename=output_raw_filename, video_array=input_raw.cpu(), fps=fps_data[0].item(), video_codec='h264')
         write_video(filename=output_file_filename, video_array=prediction.cpu(), fps=fps_data[0].item(), video_codec='h264')
 
-        '''
-        # Get cropped raw video after raw_transform
-        input = torch.cat(input.unbind(), dim=-3)  # [B x C x T x H x W] to [C x T x H x W], C = 1
-        input = torch.permute(input, (1, 2, 3, 0)) # [T x H x W x C], write_video format
-        input = torch.cat([input, input, input], dim=-1)
-        input = ((input - torch.min(input)) * 255 / (torch.max(input) - torch.min(input))).type(torch.uint8) # map min to 0, max to 255
-        output_rawTransform_filename = f'output_rawTransform_T{crop_start_time}_T{crop_end_time}.avi'
-        write_video(filename=output_rawTransform_filename, video_array=input.cpu(), fps=18.0332, video_codec='h264')
-        '''   
     
         # Free up memory
         del input
@@ -414,18 +405,6 @@ class ProbFieldPredictor:
         self.output_dir = output_dir
         self.out_channels = out_channels
 
-
-    def process_frame(self, frame):
-        binary_image = frame.astype(bool)
-        processed_image = remove_small_objects(binary_image, min_size=200, connectivity=2)
-        processed_image = remove_small_holes(processed_image, area_threshold=200, connectivity=2)
-        
-        labeled_image = label(processed_image)
-        processed_image = remove_objects_by_distance(labeled_image, min_distance=200)
-        processed_image = np.where(processed_image, 255, 0)
-        
-        return processed_image
-        
         
 
     def process_batch(self, input, crop_start_time, crop_end_time, fps_data, threshold_data):
@@ -485,64 +464,6 @@ class ProbFieldPredictor:
         gc.collect()
         torch.cuda.empty_cache()
 
-        '''
-        # Image processing - skimage
-        np_input = input.cpu().numpy()
-
-        # processed_np_tensor = np.array([self.process_frame(np_tensor[t, :, :]) for t in range(np_tensor.shape[0])])
-        with ThreadPoolExecutor() as executor:
-            processed_frames = list(executor.map(self.process_frame, [np_input[t, :, :] for t in range(np_input.shape[0])]))
-
-        processed_np_input = np.stack(processed_frames, axis=0)
-        processed_input = torch.from_numpy(processed_np_input).cuda(non_blocking=True)
-        
-    
-        # Calculate Area (white pixels)
-        r, g, b = processed_input[:, :, :, :, 0], processed_input[:, :, :, :, 1], processed_input[:, :, :, :, 2]  # input: BTHWC, C = 3
-        input_analysis = 0.2989 * r + 0.5870 * g + 0.1140 * b  # BTHW
-        input_analysis = torch.cat(input_analysis.unbind(), dim=-3) # THW
-        area = torch.sum(input_analysis, (1,2)) / 255  # T
-        area[area == 0] = torch.nan
-        
-
-        # centroid formula
-        d0, d1, d2 = input_analysis.shape
-
-        x_coord = torch.arange(d2).unsqueeze(0).expand(d0, d2).unsqueeze(1).expand(-1, d1, -1).cuda(non_blocking=True) # columns are the same
-        y_coord = torch.arange(d1).unsqueeze(0).expand(d0, d1).unsqueeze(2).expand(-1, -1, d2).cuda(non_blocking=True) # rows are the same
-
-        x_centroid = (x_coord * input_analysis).nanmean(dim=[1,2]) / 255 # T
-        y_centroid = (y_coord * input_analysis).nanmean(dim=[1,2]) / 255 # T
-
-        x_centroid[x_centroid == 0] = torch.nan
-        y_centroid[y_centroid == 0] = torch.nan        
-
-    
-        # construct filenames
-        output_dir = self.output_dir
-        output_pred_filename = f'output_pred_F{crop_start_time[0].item()}_F{crop_end_time[-1].item()}.avi'
-        output_area_filename = f'output_area_F{crop_start_time[0].item()}_F{crop_end_time[-1].item()}.csv'  # F: frame; T: time
-        output_centroid_filename = f'output_centroid_F{crop_start_time[0].item()}_F{crop_end_time[-1].item()}.csv'
-    
-        output_pred_filename = os.path.join(output_dir, output_pred_filename)
-        output_area_filename = os.path.join(output_dir, output_area_filename)
-        output_centroid_filename = os.path.join(output_dir, output_centroid_filename)
-
-        # writing files
-        processed_input = torch.cat(processed_input.unbind(), dim=-4) #THWC
-        write_video(filename=output_pred_filename, video_array=processed_input.cpu(), fps=fps_data[0].item(), video_codec='h264')
-        
-        np.savetxt(output_area_filename, area.cpu().numpy(), delimiter=',')
-        
-        centroids = np.column_stack((x_centroid.cpu().numpy(), y_centroid.cpu().numpy()))
-        np.savetxt(output_centroid_filename, centroids, delimiter=',', header='x_centroid,y_centroid', comments='')
-    
-    
-        # Free up memory
-        del input, np_input, processed_frames, processed_np_input, processed_input, r, g, b, input_analysis, area, x_coord, y_coord, x_centroid, y_centroid, centroids
-        gc.collect()
-        torch.cuda.empty_cache()
-        '''
 
     
     def __call__(self, test_loader):
