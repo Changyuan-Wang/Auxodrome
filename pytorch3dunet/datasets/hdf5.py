@@ -320,14 +320,6 @@ logger_video = get_logger('VideoDataset')
 class VideoDataset(ConfigDataset):
     """
     Single well video reader. Use spatial_crop, frame_crop, and crop_center to specify the well.
-
-    Args:
-        file_path (str): Path to the video file.
-        slice_builder_config (dict): Configuration for slicing the video into patches or frames.
-        transformer_config (dict): Configuration for data transformations.
-        frame_range (tuple): Tuple of (start, end) frame to load the video.
-        phase (str): Phase of data usage ('train', 'test', 'val').
-        global_normalization (bool): Whether to normalize the video frames globally.
     """
     
     
@@ -344,10 +336,6 @@ class VideoDataset(ConfigDataset):
         self.num_frame_crops = np.floor((frame_range[1] - frame_range[0]) / self.frame_crop)
 
         
-        #if global_normalization:
-            #stats = calculate_stats(self.video, global_normalization)
-        #else:
-            #stats = {'mean': 0.0, 'std': 1.0}  # Default stats, modify as needed
         stats = {'mean': None, 'std': None}
         self.transformer = transforms.Transformer(transformer_config, stats)
         self.raw_transform = self.transformer.raw_transform()
@@ -378,8 +366,7 @@ class VideoDataset(ConfigDataset):
         # permute crop_video to proper order
         crop_video = torch.permute(crop_video, (3, 0, 1, 2)) # CTHW
         
-        # Temporariliy convert crop_video to numpy array
-        # Later: augment folder - transforms.py - Class Standardize - create a VideoStandardize - then no need to do "crop_video.numpy()"
+        # Temporarily convert crop_video to numpy array
         crop_video_transform = crop_video.float().numpy()
         crop_video_transform = self.raw_transform(crop_video_transform) # raw_transform: input - numpy array; output - torch tensor
 
@@ -409,7 +396,7 @@ class VideoDataset(ConfigDataset):
                     transformer_config=transformer_config,
                     spatial_crop=phase_config.get('spatial_crop', 256),
                     frame_crop=phase_config.get('frame_crop', 1),
-                    crop_center=phase_config.get('crop_center', [2456, 2484]), # coord of y,x in Fiji
+                    crop_center=phase_config.get('crop_center', [2456, 2484]), # coord of y,x of a well
                     frame_range=phase_config.get('frame_range', (0, None)),
                     global_normalization=phase_config.get('global_normalization', True)
                 )
@@ -417,76 +404,7 @@ class VideoDataset(ConfigDataset):
             except Exception:
                 logger_video.error(f'Skipping {phase} set: {file_path}', exc_info=True)
         return datasets
-    
 
-
-
-    
-    '''
-    # Time Cropper
-    def __getitem__(self, index):
-        
-        if index >= len(self):
-            raise StopIteration
-
-        # Get range of frames
-        crop_time_start = index * self.time_crop + self.time_range[0] # actually start time
-        crop_time_end = (index + 1) * self.time_crop + self.time_range[0]
-
-        # Read video into tensor T
-        crop_video, _, info = read_video(self.file_path, start_pts=crop_time_start, end_pts = crop_time_end, pts_unit='sec')
-        # crop_video is [Time x height x width x channel]
-        
-
-        # Crop to the well/specified location
-        crop_height = [int(self.crop_center[0] - self.spatial_crop / 2), int(self.crop_center[0] + self.spatial_crop / 2)]
-        crop_width = [int(self.crop_center[1] - self.spatial_crop / 2), int(self.crop_center[1] + self.spatial_crop / 2)]
-        crop_video = crop_video[:,crop_height[0]:crop_height[1], crop_width[0]:crop_width[1],:]
-        
-        # permute crop_video to proper order
-        crop_video = torch.permute(crop_video, (3, 0, 1, 2)) # CTHW
-        
-        
-        # Temporariliy convert crop_video to numpy array
-        # Later: augment folder - transforms.py - Class Standardize - create a VideoStandardize - then no need to do "crop_video.numpy()"
-        crop_video_transform = crop_video.float().numpy()
-        crop_video_transform = self.raw_transform(crop_video_transform)
-
-        crop_start_time = torch.tensor(crop_time_start)
-        crop_end_time = torch.tensor(crop_time_end)
-        fps = torch.tensor(info['video_fps'])
-
-        return crop_video_transform, crop_video, crop_start_time, crop_end_time, fps
-    
-
-    def __len__(self):
-        return int(self.num_time_crops)
-    
-    @classmethod
-    def create_datasets(cls, dataset_config, phase):
-        phase_config = dataset_config[phase]
-        transformer_config = phase_config['transformer']
-        file_paths = phase_config['file_paths']
-
-        datasets = []
-        for file_path in file_paths:
-            try:
-                logger_video.info(f'Loading {phase} set from: {file_path}...')
-                dataset = cls(
-                    file_path=file_path,
-                    phase=phase,
-                    transformer_config=transformer_config,
-                    spatial_crop=phase_config.get('spatial_crop', 400),
-                    time_crop=phase_config.get('time_crop', 1),
-                    crop_center=phase_config.get('crop_center', [2456, 2484]), # coord of y,x in Fiji
-                    time_range=phase_config.get('time_range', (0, None)),
-                    global_normalization=phase_config.get('global_normalization', True)
-                )
-                datasets.append(dataset)
-            except Exception:
-                logger_video.error(f'Skipping {phase} set: {file_path}', exc_info=True)
-        return datasets
-    '''
 
 
 
