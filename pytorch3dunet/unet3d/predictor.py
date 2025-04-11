@@ -386,9 +386,6 @@ import gc
 import torch
 import numpy as np
 from torchvision.io import write_video
-from skimage.morphology import remove_small_objects, remove_small_holes, remove_objects_by_distance
-from skimage.measure import label
-from concurrent.futures import ThreadPoolExecutor
 from pytorch3dunet.datasets.hdf5 import ProbFieldDataset
 
 logger_ProbField = get_logger('ProbFieldPredictor')
