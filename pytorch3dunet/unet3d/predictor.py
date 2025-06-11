@@ -288,7 +288,6 @@ def dsb_save_batch(output_dir, path, pred, save_segmentation=True, pmaps_thersho
 
 import os
 import gc
-import torch
 from torchvision.io import write_video
 from pytorch3dunet.datasets.hdf5 import VideoDataset
      
@@ -383,7 +382,6 @@ class VideoPredictor(_AbstractPredictor):
 
 import os
 import gc
-import torch
 import numpy as np
 from torchvision.io import write_video
 from pytorch3dunet.datasets.hdf5 import ProbFieldDataset
