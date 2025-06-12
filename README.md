@@ -1,4 +1,4 @@
-### Auxodrome  
+## Auxodrome  
 **Auxo-**: growth, increase; a Greek goddess representing growth  
 **-drome**: a place for running or racing  
 
