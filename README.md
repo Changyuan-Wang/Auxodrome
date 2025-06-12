@@ -2,7 +2,7 @@
 **Auxo-**: growth, increase; a Greek goddess representing growth  
 **-drome**: a place for running or racing  
 
-“Auxodrome” is also a real word referring to “a plotted curve indicating the relative development of a child at any given age.”
+“**Auxodrome**” is also a real word referring to “a plotted curve indicating the relative development of a child at any given age.”
 
 ---
 
