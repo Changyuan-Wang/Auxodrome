@@ -25,6 +25,7 @@ After completing those steps:
    ```
 3. Replace the following files in the cloned pytorch-3dunet repository:
    - In the [pytorch3dunet/datasets](https://github.com/wolny/pytorch-3dunet/tree/master/pytorch3dunet/datasets) folder, replace [hdf5.py](https://github.com/wolny/pytorch-3dunet/blob/master/pytorch3dunet/datasets/hdf5.py) with the version provided in the substitution folder of this repository.
+   
    - In the [pytorch3dunet/unet3d](https://github.com/wolny/pytorch-3dunet/tree/master/pytorch3dunet/unet3d) folder, replace [predictor.py](https://github.com/wolny/pytorch-3dunet/blob/master/pytorch3dunet/unet3d/predictor.py) with the version provided in the same folder.
   
 
@@ -55,6 +56,7 @@ After completing those steps:
 2. There are two types of testing yaml files, test_config-VideoDataset.yml and test_config-ProbField.yml. The example yaml files for one example well in the “example” folder.
    
     - The VideoDataset yaml file is to use the trained 3D-Unet model to run predictions on the testing frames you specified, and it will generate batches of raw frames and predicted frames for your specified well. The raw frames are just original avi videos of that well, and the predicted frames are a probability field representing the probability of each pixel being the foreground.
+   
     - Use [CombineVideo.ipynb](https://github.com/Changyuan-Wang/Auxodrome/blob/main/CombineVideo.ipynb) to combine all the batches of predicted frames into a large video for each well. Then use ProbField yaml file to threshold the probability field, turn the thresholded predicted frames into batches of avi videos, calculate the areas and centroids of the predicted larvae and save those two metrics into batches csv files for future analysis.
 
 
