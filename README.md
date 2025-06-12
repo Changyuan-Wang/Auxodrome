@@ -14,8 +14,9 @@ After completing those steps:
 
 1. Create a conda environment as instructed on the pytorch-3dunet page and activate it.  
 2. Install the required packages listed on the pytorch-3dunet page, and additionally:  
-   ```bash
+   ```
    conda install -c pytorch torchvision pytorch -c conda-forge numpy
+   ```
 
 
 
