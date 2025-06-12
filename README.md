@@ -45,7 +45,7 @@ After completing those steps:
 4. Convert the training and validation datasets into HDF5 format with /raw and /label datasets, as specified by [pytorch-3dunet](https://github.com/wolny/pytorch-3dunet). A minimum of 16 frames along the time axis is required for both training and validation sets.
 
 
-5. An example training YAML file is provided as train_config.yml in the [example folder](https://github.com/Changyuan-Wang/Auxodrome/tree/main/Example).
+5. An example training YAML file is provided as [train_config.yml](https://github.com/Changyuan-Wang/Auxodrome/blob/main/Example/train_config.yml) in the [example folder](https://github.com/Changyuan-Wang/Auxodrome/tree/main/Example).
 
 ---
 
