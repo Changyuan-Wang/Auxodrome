@@ -1,4 +1,4 @@
-## Auxodrome  
+## The Fruit Fly Auxodrome: a computer vision setup for longitudinal studies of Drosophila development 
 **Auxo-**: growth, increase; a Greek goddess representing growth  
 **-drome**: a place for running or racing  
 
