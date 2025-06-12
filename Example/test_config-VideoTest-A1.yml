@@ -1,0 +1,20 @@
+model_path: /path/to/best_checkpoint.pytorch
+model: {name: ResidualUNet3D, in_channels: 3, out_channels: 2, layer_order: gcr, f_maps: 64,
+  num_groups: 8, final_sigmoid: false}
+predictor: {name: VideoPredictor}
+loaders:
+  dataset: VideoDataset
+  batch_size: 2
+  num_workers: 8
+  test:
+    file_paths: [/path/to/Experimental_video_name.avi]
+    spatial_crop: 320
+    frame_crop: 100
+    frame_range: [1, 130001]
+    global_normalization: true
+    transformer:
+      raw:
+      - {name: Standardize}
+      - {name: ToTensor, expand_dims: true}
+    crop_center: [700, 900]
+  output_dir: /output/dir/A1

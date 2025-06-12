@@ -1,0 +1,152 @@
+# Configuration file for training a 3D U-Net model using PyTorch
+model:
+  name: ResidualUNet3D
+  # number of input channels to the model
+  in_channels: 3
+  # number of output channels
+  out_channels: 2
+  # determines the order of operators in a single layer (crg - Conv3d+ReLU+GroupNorm)
+  layer_order: gcr
+  # initial number of feature maps
+  f_maps: 64
+  # number of groups in the groupnorm
+  num_groups: 8
+  # apply element-wise nn.Sigmoid after the final 1x1x1 convolution, otherwise apply nn.Softmax
+  final_sigmoid: false
+# loss function to be used during training
+loss:
+  name: CrossEntropyLoss
+  # a target value that is ignored and does not contribute to the input gradient
+  ignore_index: 2
+  # skip the last channel in the target (i.e. when last channel contains data not relevant for the loss)
+  skip_last_target: false
+optimizer:
+  # initial learning rate
+  learning_rate: 0.0002
+  # weight decay
+  weight_decay: 0.00001
+# evaluation metric
+eval_metric:
+  # use AdaptedRandError metric
+  name: MeanIoU #BoundaryAdaptedRandError
+  ignore_index: 2
+  # probability maps threshold
+  #threshold: 0.4
+  # use the last target channel to compute the metric
+  #use_last_target: true
+  # use only the first channel for computing the metric
+  #use_first_input: true
+#lr_scheduler:
+  #name: ReduceLROnPlateau
+  # make sure to use the 'min' mode cause lower AdaptedRandError is better
+  #mode: min
+  #factor: 0.2
+  #patience: 20
+trainer:
+  # model with lower eval score is considered better
+  eval_score_higher_is_better: True
+  # path to the checkpoint directory
+  checkpoint_dir: /your/checkpoint/dir
+  # path to latest checkpoint; if provided the training will be resumed from that checkpoint
+  resume: null 
+  # path to the best_checkpoint.pytorch; to be used for fine-tuning the model with additional ground truth
+  # make sure to decrease the learning rate in the optimizer config accordingly
+  pre_trained: null
+  # how many iterations between validations
+  validate_after_iters: 200
+  # how many iterations between tensorboard logging
+  log_after_iters: 100
+  # max number of epochs
+  max_num_epochs: 2000
+  # max number of iterations
+  max_num_iterations: 150000
+# Configure training and validation loaders
+loaders:
+  # how many subprocesses to use for data loading
+  num_workers: 8
+  dataset: StandardHDF5Dataset
+  batch_size: 16 # power of 2
+  # path to the raw data within the H5
+  raw_internal_path: /raw
+  # path to the the label data within the H5
+  label_internal_path: /label
+  # configuration of the train loader
+  train:
+    # path to the training datasets
+    file_paths:
+      - /your/path/to/train.h5
+      
+
+    # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
+    slice_builder:
+      name: FilterSliceBuilder
+      # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
+      patch_shape: [16, 256, 256]
+      # train stride between patches
+      stride_shape: [2, 32, 32]
+      # minimum volume of the labels in the patch
+      threshold: 0.2
+      # probability of accepting patches which do not fulfil the threshold criterion
+      slack_acceptance: 0.01
+
+    transformer:
+      raw:
+        # subtract mean and divide by std dev
+        - name: Standardize
+        # randomly flips the volume in one of the axis
+        - name: RandomFlip
+        # randomly rotates the volume with 90 deg across a randomly chosen plane
+        - name: RandomRotate90
+        - name: RandomRotate
+          # rotate only in ZY plane due to anisotropy
+          axes: [ [ 2, 1 ] ]
+          # rotates by choosing random angle from [-30, 30] deg
+          angle_spectrum: 30
+          mode: reflect
+        - name: ElasticDeformation
+          spline_order: 3
+        - name: ToTensor
+          expand_dims: true
+      label:
+        - name: RandomFlip
+        - name: RandomRotate90
+        - name: RandomRotate
+          # rotate only in ZY plane due to anisotropy
+          axes: [ [ 2, 1 ] ]
+          angle_spectrum: 30
+          mode: reflect
+        - name: ElasticDeformation
+          spline_order: 0
+          # convert target volume to binary mask
+        - name: ToTensor
+          expand_dims: false
+          dtype: long
+
+  # configuration of the val loader
+  val:
+    # path to the val datasets
+    file_paths:
+      - /your/path/to/val.h5
+
+    # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
+    slice_builder:
+      name: FilterSliceBuilder
+      # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
+      patch_shape: [16, 256, 256]
+      # train stride between patches
+      stride_shape: [2, 32, 32]
+      # minimum volume of the labels in the patch
+      threshold: 0.2
+      # probability of accepting patches which do not fulfil the threshold criterion
+      slack_acceptance: 0.01
+
+    # data augmentation
+    transformer:
+      raw:
+        - name: Standardize
+        - name: ToTensor
+          expand_dims: true
+      label:
+        - name: ToTensor
+          expand_dims: false
+          dtype: long

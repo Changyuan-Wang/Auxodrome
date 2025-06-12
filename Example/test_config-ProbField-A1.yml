@@ -1,0 +1,14 @@
+model_path: /path/to/best_checkpoint.pytorch
+model: {name: ResidualUNet3D, in_channels: 3, out_channels: 2, layer_order: gcr, f_maps: 64,
+  num_groups: 8, final_sigmoid: false}
+predictor: {name: ProbFieldPredictor}
+loaders:
+  dataset: ProbFieldDataset
+  batch_size: 4
+  num_workers: 8
+  test:
+    frame_crop: 500
+    frame_range: [1, 130001]
+    threshold: 250
+    file_paths: [/path/to/A1/PredictedVideoName_A1_file.avi]
+  output_dir: /output/dir/A1/
