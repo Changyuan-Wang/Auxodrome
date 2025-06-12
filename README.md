@@ -51,7 +51,7 @@ After completing those steps:
 
 ### YAML file generator
 
-1. We used a [YAML file generator](https://github.com/Changyuan-Wang/Auxodrome/blob/main/YAMLfileGenerator.ipynb) to create YAML files for analyzing experimental videos. This generator identifies the center of each well, and creates a testing yaml file for each well separately. Use the trained model for each larval stage (eggs&L1, L2, L3&pupae) and adults to run tests on that stage separately.
+1. We used a [YAML file generator](https://github.com/Changyuan-Wang/Auxodrome/blob/main/YAMLfileGenerator.ipynb) to create YAML files for analyzing experimental videos. This generator identifies the center of each well, and creates a testing yaml file for each well separately. Use the trained model for each larval stage (eggs & L1, L2, L3 & pupae) and adults to run tests on that stage separately.
    
 2. There are two types of testing yaml files, test_config-VideoDataset.yml and test_config-ProbField.yml. The example yaml files for one example well in the “example” folder.
    
