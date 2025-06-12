@@ -1,5 +1,22 @@
-# The Auxodrome Computational Pipeline
-Shvartsman Lab developed the "Auxodrome” - auxo- meaning “growth” together with -drome denoting "the place where running occurs” - for post-embryonic development and growth of singly-housed Drosophila melanogaster in a 96-well plate.
+### Auxodrome  
+**Auxo-**: growth, increase; a Greek goddess representing growth  
+**-drome**: a place for running or racing  
+
+“Auxodrome” is also a real word referring to “a plotted curve indicating the relative development of a child at any given age.”
+
+---
+
+### Installation & Substitution  
+
+Please follow the installation instructions provided on the [pytorch-3dunet GitHub page](https://github.com/wolny/pytorch-3dunet).
+
+After completing those steps:
+
+1. Create a conda environment as instructed on the pytorch-3dunet page and activate it.  
+2. Install the required packages listed on the pytorch-3dunet page, and additionally:  
+   ```bash
+   conda install -c pytorch torchvision pytorch -c conda-forge numpy
+
 
 
 
