@@ -24,7 +24,7 @@ After completing those steps:
    conda install -c pytorch torchvision pytorch -c conda-forge numpy
    ```
 3. Replace the following files in the cloned pytorch-3dunet repository:
-   - In the [pytorch3dunet/datasets](https://github.com/wolny/pytorch-3dunet/tree/master/pytorch3dunet/datasets) folder, replace [hdf5.py](https://github.com/wolny/pytorch-3dunet/blob/master/pytorch3dunet/datasets/hdf5.py) with the version provided in the substitution folder of this repository.
+   - In the [pytorch3dunet/datasets](https://github.com/wolny/pytorch-3dunet/tree/master/pytorch3dunet/datasets) folder, replace [hdf5.py](https://github.com/wolny/pytorch-3dunet/blob/master/pytorch3dunet/datasets/hdf5.py) with the version provided in the [substitution folder](https://github.com/Changyuan-Wang/Auxodrome/tree/main/Substitution) of this repository.
    
    - In the [pytorch3dunet/unet3d](https://github.com/wolny/pytorch-3dunet/tree/master/pytorch3dunet/unet3d) folder, replace [predictor.py](https://github.com/wolny/pytorch-3dunet/blob/master/pytorch3dunet/unet3d/predictor.py) with the version provided in the same folder.
   
@@ -45,7 +45,7 @@ After completing those steps:
 4. Convert the training and validation datasets into HDF5 format with /raw and /label datasets, as specified by [pytorch-3dunet](https://github.com/wolny/pytorch-3dunet). A minimum of 16 frames along the time axis is required for both training and validation sets.
 
 
-5. An example training YAML file is provided as train_config.yml in the example folder.
+5. An example training YAML file is provided as train_config.yml in the [example folder](https://github.com/Changyuan-Wang/Auxodrome/tree/main/Example).
 
 ---
 
@@ -53,7 +53,7 @@ After completing those steps:
 
 1. We use a [YAML file generator](https://github.com/Changyuan-Wang/Auxodrome/blob/main/YAMLfileGenerator.ipynb) to create YAML files for analyzing experimental videos. This generator identifies the center of each well, and creates a testing yaml file for each well separately. Use the trained model for each larval stage (eggs & L1, L2, L3 & pupae) and adults to run tests on that stage separately.
    
-2. There are two types of testing yaml files, test_config-VideoDataset.yml and test_config-ProbField.yml. The example yaml files for one example well in the “example” folder.
+2. There are two types of testing yaml files, test_config-VideoDataset.yml and test_config-ProbField.yml. The example yaml files for one example well in the [example folder](https://github.com/Changyuan-Wang/Auxodrome/tree/main/Example).
    
     - The VideoDataset yaml file is to use the trained 3D-Unet model to run predictions on the testing frames you specified, and it will generate batches of raw frames and predicted frames for your specified well. The raw frames are just original avi videos of that well, and the predicted frames are a probability field representing the probability of each pixel being the foreground.
    
