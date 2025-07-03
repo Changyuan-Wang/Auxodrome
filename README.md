@@ -67,6 +67,13 @@ After completing those steps:
 We use a [PlotGenerator](https://github.com/Changyuan-Wang/Auxodrome/blob/main/PlotGenerator.ipynb) to find the timings of hatching, pupation, and eclosion for all wells. This ipynb file will read the csv files generated from ProbField testings, apply noise filters on the generated metrics, and spit out the timings of hatching, pupation, and eclosion.
 
 
+---
+
+### License
+
+This code is released under the MIT License. See the [LICENSE.md](./LICENSE.md) file for details.
+
+
 
 
 
