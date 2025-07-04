@@ -21,7 +21,7 @@ After completing those steps:
 2. Install the required packages listed on the [pytorch-3dunet page](https://github.com/wolny/pytorch-3dunet), and additionally:
     
    ```
-   conda install -c pytorch torchvision pytorch -c conda-forge numpy
+   conda install -c pytorch torchvision pytorch -c conda-forge numpy av
    ```
 3. Replace the following files in the cloned pytorch-3dunet repository:
    - In the [pytorch3dunet/datasets](https://github.com/wolny/pytorch-3dunet/tree/master/pytorch3dunet/datasets) folder, replace [hdf5.py](https://github.com/wolny/pytorch-3dunet/blob/master/pytorch3dunet/datasets/hdf5.py) with the version provided in the [substitution folder](https://github.com/Changyuan-Wang/Auxodrome/tree/main/Substitution) of this repository.
